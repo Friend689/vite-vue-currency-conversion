@@ -1,0 +1,42 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import Header from "@/components/ui/Header.vue";
+
+const rates = ref({});
+const currencies = ref(['USD', 'EUR', 'RUB']);
+const selectedCurrency = ref('RUB');
+
+const changeCurrency = (currency) => {
+  selectedCurrency.value = currency
+  getCurrencies()
+},
+    // async getCurrencies() {
+    //   const response = await axios.get('https://status.neuralgeneration.com/api/currency')
+    //   const rates = response.data
+    //   this.rates = {}
+    //   for (const currency in rates) {
+    //     this.rates[currency] = rates[currency] / rates[this.selectedCurrency]
+    //   }
+    // }
+
+const getCurrencies = async () => {
+  const response = await fetch("https://status.neuralgeneration.com/api/currency");
+    // .then(response => response.json())
+    // .then(data => arrCurrency.value = data);
+}
+
+onMounted(() => {
+  getCurrency();
+})
+</script>
+
+<template>
+  <div>
+    <Header />
+    <main>
+      <router-view :rates="rates" :currencies="currencies" />
+    </main>
+  </div>
+</template>
+
+<style scoped></style>

@@ -1,0 +1,103 @@
+<script setup>
+import { ref, watch } from "vue";
+
+const props = defineProps([
+  "selected",
+  "currencies",
+  "rates"
+]);
+
+watch(() => props.rates, (first, second) => {
+  collectCurrencies();
+  convert("from");
+});
+
+const arrCurrencies = ref({});
+const fromCurrency = ref('rub');
+const toCurrency = ref('usd');
+const fromValue = ref(0);
+const toValue = ref(0);
+const error = ref('');
+
+
+const collectCurrencies = () => {
+  const uniqueCurrencies = new Set();
+  for (const key in props.rates) {
+    const [from, to] = key.split('-');
+    uniqueCurrencies.add(from);
+    uniqueCurrencies.add(to);
+  }
+  const res = Array.from(uniqueCurrencies);
+  return res;
+};
+
+const convert = (inputType = "from") => {
+  if (isNaN(fromValue.value) && isNaN(toValue.value)) {
+    error.value = "Пожалуйста, введите числовое значение"
+    return
+  }
+  const fromRate = props.rates[fromCurrency.value + "-" + toCurrency.value];
+  const toRate = props.rates[toCurrency.value + "-" + fromCurrency.value];
+
+  if (fromCurrency.value !== toCurrency.value) {
+    const fromBase = fromCurrency.value === "rub";
+    const toBase = toCurrency.value === "rub";
+
+    if (inputType === 'from') {
+      toValue.value = fromValue.value * (fromBase ? toRate : toBase ? 1 / fromRate : fromRate / toRate);
+    } else if (inputType === 'to') {
+      fromValue.value = toValue.value * (fromBase ? 1 / toRate : toBase ? fromRate : toRate / fromRate);
+    }
+  } else {
+    toValue.value = fromValue.value;
+    fromValue.value = toValue.value;
+  }
+
+  if (fromValue.value) {
+    fromValue.value = Number(fromValue.value.toFixed(2))
+  }
+  if (toValue.value) {
+    toValue.value = Number(toValue.value.toFixed(2))
+  }
+  error.value = ""
+};
+</script>
+
+<template>
+  <div class="page-convert">
+    <form>
+      <div>
+        <select v-model="fromCurrency" @change="convert('from')">
+          <option v-for="currency in collectCurrencies()" :key="currency" :value="currency">{{ currency.toUpperCase() }}
+          </option>
+        </select>
+        <input type="number" v-model.number="fromValue" @input="convert('from')" />
+      </div>
+      <div>
+        <select v-model="toCurrency" @change="convert('to')">
+          <option v-for="currency in collectCurrencies()" :key="currency" :value="currency">{{ currency.toUpperCase() }}
+          </option>
+        </select>
+        <input type="number" v-model.number="toValue" @input="convert('to')" />
+      </div>
+    </form>
+    <p v-if="error">{{ error }}</p>
+  </div>
+</template>
+
+<style scoped>
+.page-convert {
+  padding-top: 40px;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form div {
+  margin: 7px;
+}
+</style>
