@@ -13,9 +13,10 @@ const changeCurrency = (currency) => {
 };
 
 const getCurrencies = () => {
-  fetch("https://status.neuralgeneration.com/api/currency")
-    .then(response => response.json())
-    .then(data => rates.value = data);
+  // fetch("https://status.neuralgeneration.com/api/currency")
+  //   .then(response => response.json())
+  //   .then(data => rates.value = data);
+  // this.$api.get
 }
 
 onMounted(() => {
