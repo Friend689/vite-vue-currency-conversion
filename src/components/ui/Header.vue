@@ -1,18 +1,20 @@
 <script setup>
 import { ref } from "vue";
+import { useCurrenciesStore } from "@/store/currencies";
+// const props = defineProps([
+//   "selected",
+// ]);
 
-const props = defineProps([
-  "selected",
-]);
+const currenciesStore = useCurrenciesStore();
 
 const emit = defineEmits(["change-currency"]);
 
-const currencies = ref(["usd", "eur", "rub"]);
-const selectedCurrency = ref(props.selected);
+const currencies = currenciesStore.defaultArr;
+const selectedCurrency = currenciesStore.selected;
 
-const changeCurrency = () => {
-  emit("change-currency", selectedCurrency.value)
-}
+// const changeCurrency = () => {
+//   emit("change-currency", selectedCurrency.value)
+// }
 
 </script>
 
